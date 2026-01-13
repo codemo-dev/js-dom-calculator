@@ -8,34 +8,42 @@ container.addEventListener("click", function (e) {
     
     if (value === "d") {
         currentProcess.value = currentProcess.value.slice(0, -1);
+
     } else if (value === "ac") {
         result.value = "";
         currentProcess.value = "";
+
     } else if (value !== "=" && value !== "+/-") {
         currentProcess.value += value;
+
     }  else if (isNaN(Number(currentProcess.value)) && currentProcess.value.length === 1) {
         result.value = "";
         currentProcess.value = ""
-    } else if (value === "=") {
-        function calc() {
-            let marks = "-+/*%";
-            for (let i = 0; i < currentProcess.value.length; i++) {
-                let char = currentProcess.value[i];
-                if (marks.includes(char)) {
-                    let parts = currentProcess.value.split(char);
-                    let num1 = parseInt(parts[0]);
-                    let num2 = parseInt(parts[1]);
 
-                    if (char === "+") return num1 + num2;
-                    if (char === "-") return num1 - num2;
-                    if (char === "*") return num1 * num2;
-                    if (char === "/") return num1 / num2;
-                    if (char === "%") return num1 % num2;
-                }
-            }
-            return null;
+    } else if (value === "=") {
+
+        function calc() {
+            let process = currentProcess.value;
+
+            let nums = process.split(/[\+\-\*\/\%]/).map(n => parseFloat(n));
+            let marks = ["+", "-", "*", "/", "%"];
+            let operators = process.split("").filter(char => marks.includes(char));
+
+            let total = nums.reduce((acc, curr, i) => {
+                let op = operators[i - 1];
+
+                if (op === "+") return acc + curr;
+                if (op === "-") return acc - curr;
+                if (op === "*") return acc * curr;
+                if (op === "/") return acc / curr;
+                if (op === "%") return acc % curr;
+
+                return curr;
+            },);
+            return total;
         }
         let finalResult = calc()
+
         if (finalResult !== null && !isNaN(finalResult)) {
             result.value = finalResult;
         }
